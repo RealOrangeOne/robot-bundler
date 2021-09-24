@@ -7,7 +7,7 @@ use crate::kit_version::KitVersion;
 #[derive(Clone, Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BundleVersionSection {
-    pub version: String
+    pub version: String,
 }
 
 #[derive(Clone, Deserialize, Debug, Serialize)]
@@ -26,7 +26,6 @@ pub struct WiFiInformationSection {
     pub region: String,
 }
 
-
 #[derive(Clone, Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BundleInformationSchema {
@@ -40,10 +39,6 @@ impl BundleInformationSchema {
         let contents = fs::read_to_string(filename)?;
         let info: BundleInformationSchema = toml::from_str(&contents)?;
         Ok(info)
-    }
-
-    pub fn to_string(&self) -> String {
-        toml::to_string(&self).unwrap()
     }
 }
 
@@ -66,6 +61,5 @@ mod tests {
         assert_eq!(info.wifi.psk, "beeeeees");
         assert_eq!(info.wifi.region, "GB");
         assert!(info.wifi.enabled);
-        println!("{}", info.to_string())
     }
 }

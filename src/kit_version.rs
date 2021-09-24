@@ -13,8 +13,8 @@ pub struct BuildInfo {
 
 impl fmt::Display for BuildInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.branch.as_ref(){
-            None =>  write!(f, "{}", self.commit),
+        match self.branch.as_ref() {
+            None => write!(f, "{}", self.commit),
             Some(branch) => write!(f, "{}@{}", self.commit, branch),
         }
     }
@@ -34,13 +34,29 @@ impl fmt::Display for KitVersion {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.dev {
             match &self.build_info {
-                Some(build_info) => write!(f, "{}.{}.{}.{}dev:{}", self.epoch, self.major, self.minor, self.patch, build_info),
-                None => write!(f, "{}.{}.{}.{}dev", self.epoch, self.major, self.minor, self.patch)
+                Some(build_info) => write!(
+                    f,
+                    "{}.{}.{}.{}dev:{}",
+                    self.epoch, self.major, self.minor, self.patch, build_info
+                ),
+                None => write!(
+                    f,
+                    "{}.{}.{}.{}dev",
+                    self.epoch, self.major, self.minor, self.patch
+                ),
             }
         } else {
             match &self.build_info {
-                Some(build_info) => write!(f, "{}.{}.{}.{}:{}", self.epoch, self.major, self.minor, self.patch, build_info),
-                None => write!(f, "{}.{}.{}.{}", self.epoch, self.major, self.minor, self.patch)
+                Some(build_info) => write!(
+                    f,
+                    "{}.{}.{}.{}:{}",
+                    self.epoch, self.major, self.minor, self.patch, build_info
+                ),
+                None => write!(
+                    f,
+                    "{}.{}.{}.{}",
+                    self.epoch, self.major, self.minor, self.patch
+                ),
             }
         }
     }
@@ -51,7 +67,10 @@ impl TryFrom<&str> for KitVersion {
 
     fn try_from(val: &str) -> Result<Self, Self::Error> {
         lazy_static! {
-            static ref RE: Regex = Regex::new("^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)(dev)?(?::([0-9a-f]{5,40})(?:@(\\w+))?)?$").unwrap();
+            static ref RE: Regex = Regex::new(
+                "^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)(dev)?(?::([0-9a-f]{5,40})(?:@(\\w+))?)?$"
+            )
+            .unwrap();
         }
         match RE.captures(val) {
             Some(captures) => {
@@ -79,10 +98,7 @@ impl TryFrom<&str> for KitVersion {
                 };
 
                 // Check the dev indicator
-                let dev = match captures.get(5){
-                    Some(_) => true,
-                    None => false,
-                };
+                let dev = captures.get(5).is_some();
 
                 let commit = captures.get(6);
                 let branch = captures.get(7);
@@ -90,15 +106,27 @@ impl TryFrom<&str> for KitVersion {
                 let build_info = match (commit, branch) {
                     (None, None) => None,
                     (None, Some(_)) => None,
-                    (Some(commit), None) => Some(BuildInfo {commit: commit.as_str().to_string(), branch: None }),
-                    (Some(commit), Some(branch)) => Some(BuildInfo {commit: commit.as_str().to_string(), branch: Some(branch.as_str().to_string())}),
+                    (Some(commit), None) => Some(BuildInfo {
+                        commit: commit.as_str().to_string(),
+                        branch: None,
+                    }),
+                    (Some(commit), Some(branch)) => Some(BuildInfo {
+                        commit: commit.as_str().to_string(),
+                        branch: Some(branch.as_str().to_string()),
+                    }),
                 };
 
-                Ok(KitVersion {epoch, major, minor, patch, dev, build_info})
-            },
-            None => Err("version was not in valid format.")
+                Ok(KitVersion {
+                    epoch,
+                    major,
+                    minor,
+                    patch,
+                    dev,
+                    build_info,
+                })
+            }
+            None => Err("version was not in valid format."),
         }
-        
     }
 }
 
