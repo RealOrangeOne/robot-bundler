@@ -1,0 +1,12 @@
+[bundle]
+version = "2.0.0"
+
+[kit]
+name = "Student Robotics"
+version = "2022.1.4.0:66752ef@master"
+
+[wifi]
+ssid = "robot-ABC"
+psk = "beeeeees"
+enabled = true
+region = "GB"
