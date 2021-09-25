@@ -32,32 +32,27 @@ pub struct KitVersion {
 
 impl fmt::Display for KitVersion {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.dev {
-            match &self.build_info {
-                Some(build_info) => write!(
-                    f,
-                    "{}.{}.{}.{}dev:{}",
-                    self.epoch, self.major, self.minor, self.patch, build_info
-                ),
-                None => write!(
-                    f,
-                    "{}.{}.{}.{}dev",
-                    self.epoch, self.major, self.minor, self.patch
-                ),
-            }
-        } else {
-            match &self.build_info {
-                Some(build_info) => write!(
-                    f,
-                    "{}.{}.{}.{}:{}",
-                    self.epoch, self.major, self.minor, self.patch, build_info
-                ),
-                None => write!(
-                    f,
-                    "{}.{}.{}.{}",
-                    self.epoch, self.major, self.minor, self.patch
-                ),
-            }
+        match &self.build_info {
+            Some(build_info) if self.dev => write!(
+                f,
+                "{}.{}.{}.{}dev:{}",
+                self.epoch, self.major, self.minor, self.patch, build_info
+            ),
+            Some(build_info) => write!(
+                f,
+                "{}.{}.{}.{}:{}",
+                self.epoch, self.major, self.minor, self.patch, build_info
+            ),
+            None if self.dev => write!(
+                f,
+                "{}.{}.{}.{}dev",
+                self.epoch, self.major, self.minor, self.patch
+            ),
+            None => write!(
+                f,
+                "{}.{}.{}.{}",
+                self.epoch, self.major, self.minor, self.patch
+            ),
         }
     }
 }
